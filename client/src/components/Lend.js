@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import BorrowerRequestCard from './BorrowerRequestCard';
  import axios from 'axios';
 // Inline CSS styles for a blue-themed UI
-const styles = {
+ const styles = {
   copyright: {
     textAlign: 'center',
     color: '#64748b',
@@ -20,37 +20,41 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-    padding: '30px',
-    fontFamily: '"Roboto", sans-serif',
+    padding: '40px',
+    fontFamily: '"Inter", sans-serif',
+    backgroundColor: '#f8fafc',
   },
   lendCard: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     borderRadius: '20px',
     padding: '40px 50px',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.08)',
     width: '100%',
-    maxWidth: '700px',
+    maxWidth: '720px',
     textAlign: 'center',
     transition: 'all 0.3s ease',
   },
   tabs: {
     display: 'flex',
-    marginBottom: '20px',
-    borderBottom: '3px solid #4A90E2', // Blue accent for the tab indicator
+    marginBottom: '25px',
+    borderBottom: '2px solid #e2e8f0',
   },
   tab: {
     flex: 1,
     padding: '15px 0',
     fontSize: '18px',
-    fontWeight: 'bold',
+    fontWeight: 600,
     cursor: 'pointer',
+    backgroundColor: 'transparent',
+    color: '#334155',
+    borderBottom: '3px solid transparent',
     transition: 'all 0.3s ease',
-    color: '#333',
   },
   activeTab: {
-    color: '#4A90E2', // Blue for active tab
-    borderBottom: '3px solid #4A90E2',
-    transform: 'scale(1.05)',
+    color: '#2563eb', // Tailwind Blue-600
+    borderBottom: '3px solid #2563eb',
+    backgroundColor: '#f0f7ff',
+    transform: 'scale(1.02)',
   },
   tabContent: {
     display: 'none',
@@ -60,63 +64,69 @@ const styles = {
   },
   inputField: {
     width: '100%',
-    padding: '15px',
+    padding: '14px 16px',
     marginBottom: '25px',
-    borderRadius: '12px',
-    border: '1px solid #ddd',
+    borderRadius: '10px',
+    border: '1px solid #cbd5e1',
     fontSize: '16px',
     outline: 'none',
-    transition: 'border-color 0.3s',
+    transition: 'border-color 0.3s, box-shadow 0.3s',
+    backgroundColor: '#f9fafb',
   },
   inputFocus: {
-    borderColor: '#4A90E2', // Blue on focus
+    borderColor: '#2563eb',
+    boxShadow: '0 0 0 2px rgba(37, 99, 235, 0.2)',
   },
   selectField: {
     width: '100%',
-    padding: '15px',
+    padding: '14px 16px',
     marginBottom: '25px',
-    borderRadius: '12px',
-    border: '1px solid #ddd',
+    borderRadius: '10px',
+    border: '1px solid #cbd5e1',
     fontSize: '16px',
-    transition: 'border-color 0.3s',
+    backgroundColor: '#f9fafb',
+    transition: 'border-color 0.3s, box-shadow 0.3s',
   },
   selectFocus: {
-    borderColor: '#4A90E2', // Blue on focus
+    borderColor: '#2563eb',
+    boxShadow: '0 0 0 2px rgba(37, 99, 235, 0.2)',
   },
   button: {
     width: '100%',
     padding: '16px',
-    backgroundColor: '#4A90E2', // Blue background for the button
+    backgroundColor: '#2563eb',
     color: 'white',
-    borderRadius: '12px',
+    borderRadius: '10px',
     border: 'none',
-    fontSize: '18px',
-    fontWeight: 'bold',
+    fontSize: '17px',
+    fontWeight: 600,
     cursor: 'pointer',
     transition: 'all 0.3s ease',
-    boxShadow: '0 8px 15px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 8px 16px rgba(37, 99, 235, 0.2)',
   },
   buttonHover: {
-    backgroundColor: '#357ABD', // Slightly darker blue on hover
-    boxShadow: '0 10px 20px rgba(0, 0, 0, 0.15)',
+    backgroundColor: '#1d4ed8',
+    boxShadow: '0 10px 20px rgba(37, 99, 235, 0.25)',
   },
   placeholderText: {
-    color: '#888',
+    color: '#94a3b8',
     fontStyle: 'italic',
-    fontSize: '16px',
+    fontSize: '15px',
   },
   successMessage: {
-    color: 'green',
-    fontSize: '20px',
-    fontWeight: 'bold',
+    color: '#16a34a',
+    fontSize: '17px',
+    fontWeight: 600,
     marginBottom: '20px',
   },
   errorMessage: {
-    color: 'red',
-    fontSize: '16px',
-    marginBottom: '10px',
+    color: '#dc2626',
+    fontSize: '15px',
+    fontWeight: 500,
+    marginBottom: '12px',
   },
 };
+
 
 const Lend = () => {
   const [activeTab, setActiveTab] = useState('lend');
@@ -140,36 +150,30 @@ const Lend = () => {
     }
   };
 
-  const handleAccept = async (requestId) => {
-    try {
-      const token = localStorage.getItem("token");
-      const responseToAccept = responses.find(r => r._id === requestId);
-  
-      await axios.post('http://localhost:5000/api/transactions', {
-        borrowerId: responseToAccept.borrower._id,
-        requestId: requestId,
-        amount: responseToAccept.amount,
-        interestRate: responseToAccept.interest,
-        duration: responseToAccept.duration
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-  
-      // Remove from UI
-      setResponses(prev => prev.filter(r => r._id !== requestId));
-      
-    } catch (error) {
-      console.error("Accept failed:", error);
-      // Handle error
-    }
-  };
+   const handleAccept = async (requestId) => {
+  try {
+    const token = localStorage.getItem("token");
+     await axios.post(`/api/requests/${requestId}/accept`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Optionally update state to remove accepted request immediately
+     setResponses((prev) => prev.filter((response) => response._id !== requestId));
+
+    // Optionally show a success message or redirect to transactions page
+    alert("Request accepted and transaction recorded!");
+
+  } catch (error) {
+    console.error("Accept failed:", error);
+  }
+};
 
   // Update handleReject to filter out the rejected request
 const handleReject = async (requestId) => {
   try {
     const token = localStorage.getItem("token");
     await axios.delete(`/api/requests/${requestId}/reject`, 
-      {},
+      
       { headers: { Authorization: `Bearer ${token}` } }
     );
     
@@ -378,9 +382,9 @@ const handleReject = async (requestId) => {
           ) : (
             responses.map((response, index) => (
               <BorrowerRequestCard
-                key={index}
-                borrower={response.borrower}
-                onAccept={() => handleAccept(response.borrower._id)}  // handleAccept function
+               key={response._id}
+                borrower={response}
+                onAccept={() => handleAccept(response._id)}  // handleAccept function
                 onReject={() => handleReject(response._id)} // handleReject function
               />
             ))
@@ -388,10 +392,9 @@ const handleReject = async (requestId) => {
           )}
         </div>
       </div>
-      <div style={styles.copyright}>
-        © 2025 Kamasani Pavan Kumar. All rights reserved.
-      </div>
+      
     </div>
+    
   );
 }
 export default Lend;

@@ -77,16 +77,26 @@ const RejectButton = styled.button`
 
 // Component
 const BorrowerRequestCard = ({ borrower, onAccept, onReject }) => {
-  const userDetails =  borrower?.borrowerId?.userId || {};
+  if (!borrower || !borrower._id) {
+    console.warn("Invalid borrower data:", borrower);
+    return null; // Skip rendering this card if data is broken
+  }
+  
+  const userDetails =  borrower?.borrowerId|| {};
   return (
     <Card>
       <ProfilePic src={  userDetails.profilePic || '/default-profile.jpg'} alt="Borrower" />
       <InfoWrapper>
         <Name>{  userDetails.name || 'Unnamed Borrower'}</Name>  
         <Phone>📞 { userDetails.phoneNumber || 'N/A'}</Phone>
+        <p>💰 Amount: ₹{borrower.amount}</p>
+        <p>📈 Interest: {borrower.interest}%</p>
+        <p>⏳ Duration: {borrower.duration}</p>
       </InfoWrapper>
       <ButtonGroup>
-        <AcceptButton onClick={() => onAccept(borrower._id)}>Accept</AcceptButton>
+         <AcceptButton onClick={onAccept}>Accept</AcceptButton>
+ 
+
         <RejectButton onClick={() => onReject(borrower._id)}>
           Reject
         </RejectButton>

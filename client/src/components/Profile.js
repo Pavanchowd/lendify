@@ -111,7 +111,8 @@ const Profile = () => {
       minHeight: '80vh',
       display: 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+    
     }}>
       <Paper elevation={6} sx={{
         p: 6,

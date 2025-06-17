@@ -80,6 +80,9 @@ const Borrower = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const removeLender = (lenderId) => {
+    setLenders((prevLenders) => prevLenders.filter(lender => lender._id !== lenderId));
+  };
   useEffect(() => {
     const fetchBorrowerData = async () => {
       try {
@@ -139,8 +142,14 @@ const Borrower = () => {
         headers: { Authorization: `Bearer ${token}` },
         params: { latitude, longitude, range }
       });
+const requestedLenderIds = res.data.map(r => r.lenderId);
 
-      setLenders(res.data);
+const filteredLenders = res.data.filter(
+  lender => !requestedLenderIds.includes(lender.userId._id)
+);
+
+setLenders(filteredLenders);
+       
       
     } catch (err) {
       console.error("Error:", err.response || err);
@@ -186,7 +195,9 @@ const Borrower = () => {
               console.log("A request was sent to a lender!");
               
               // Optional: trigger UI update or toast
-            }} disabled={!borrower || !borrower.amount}/>
+            }}
+             onDelete={removeLender}
+              disabled={!borrower || !borrower.amount}/>
           ))
         ) : (
           <NoData>No lenders found in your area</NoData>

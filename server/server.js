@@ -11,6 +11,8 @@ const cors = require('cors');
 const Borrower = require('./models/borrower'); // adjust the path as needed
 const auths=require("./middlewares/auth");
 const hell=require("./models/Response");
+const Transaction = require('./models/transaction'); // adjust path as needed
+
 
 // Initialize dotenv
 dotenv.config();
@@ -490,8 +492,9 @@ app.get("/response",auth,async(req,res)=>{
     
     const responses = await Response.find({
       lenderId:userId,
-    }).populate("borrowerId")
-    
+    }).populate("borrowerId", "name phoneNumber profilePic");
+    console.log("Fetched responses:", responses);
+
     res.status(200).json(responses);
   } catch (error) {
     console.error('Error fetching borrower data:', error);
@@ -515,14 +518,72 @@ app.delete('/api/requests/:id/reject', auth, async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-app.get('/transactions', auth, async (req, res) => {
+ app.get('/api/transactions', auth, async (req, res) => {
   try {
+    const userId = req.user.userId;
+
+    // Find all transactions where the user is lender or borrower
     const transactions = await Transaction.find({
-      $or: [{ lender: req.user.userId }, { borrower: req.user.userId }]
-    }).populate('lender borrower', 'name email phoneNumber');
-    
-    res.json(transactions);
+      $or: [{ lenderId: userId }, { borrowerId: userId }]
+    })
+    .populate('lenderId', 'name phoneNumber profilePic')  // populate only needed fields
+    .populate('borrowerId', 'name phoneNumber profilePic')
+    .sort({ createdAt: -1 });
+
+    res.status(200).json(transactions);
   } catch (error) {
+    console.error('Error fetching transactions:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.post('/api/requests/:id/accept', auth, async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    console.log(requestId);
+    
+    const response = await Response.findById(requestId);
+    if (!response) return res.status(404).json({ message: "Request not found" });
+
+    // Create a transaction with necessary fields
+    const transaction = new Transaction({
+      lenderId: response.lenderId,
+      borrowerId: response.borrowerId,
+      amount: response.amount,
+      interest: response.interest,
+      duration: response.duration,
+    });
+
+    await transaction.save();
+
+    // Optionally, delete or update the response/request to mark it as accepted
+    await Response.findByIdAndDelete(requestId);
+
+    res.status(200).json({ message: "Request accepted and transaction created", transaction });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+// DELETE /api/lenders/:id
+app.delete('/api/lenders/:id', async (req, res) => {
+  try {
+    const lenderId = req.params.id;
+    await Lender.findByIdAndDelete(lenderId);
+    res.status(200).json({ message: "Lender deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting lender" });
+  }
+});
+ app.get('/name', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('name');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ name: user.name });
+  } catch (error) {
+    console.error('Error fetching user name:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+

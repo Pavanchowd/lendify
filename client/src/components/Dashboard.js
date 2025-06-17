@@ -14,10 +14,29 @@ import {
 } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-
+import axios
+ from 'axios';
+import { useEffect } from 'react';
 const Dashboard = () => {
   const navigate = useNavigate();
-  const userName = localStorage.getItem('name') || 'User';
+  
+  const [userName, setUserName] = useState("");
+     useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const { data } = await axios.get('http://localhost:5000/api/auth/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setUserName(data.name);
+      } catch (error) {
+        console.error('Error fetching name for dashboard:', error);
+      }
+    };
+
+    fetchUserName();
+  }, []);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -65,7 +84,7 @@ const Dashboard = () => {
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6" sx={{ fontWeight: 600, color: 'white' }}>
-            Lendify Dashboard
+             🪙Lendify
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1" sx={{ color: 'white', mr: 2 }}>
@@ -176,7 +195,10 @@ const Dashboard = () => {
               mx: 'auto'
             }}
           >
+
             Ready to manage your finances? Choose your action below
+            <br></br>
+            Note: As a part of our privacy-first approach, only borrower details will be shared with lenders when a request is made. Lending information will remain confidential and will not be publicly displayed. This ensures a secure and trusted communication channel between both parties, while protecting sensitive financial data
           </Typography>
 
           <Grid container spacing={4} justifyContent="center">

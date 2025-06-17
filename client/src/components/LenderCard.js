@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const Card = styled.div`
   position: relative;
@@ -69,7 +70,23 @@ const RequestButton = styled.button`
 
 const LenderCard = ({ lender,borrower, onRequest, onDelete }) => {
   const [isRequested, setIsRequested] = useState(false);
-  
+    const [lenders, setLenders] = useState([]);
+
+  const removeLender = (lenderId) => {
+  setLenders((prev) => prev.filter((lender) => lender._id !== lenderId));
+};
+
+const handleRemove = async (lenderId) => {
+  try {
+    await axios.delete(`http://localhost:5000/api/lenders/${lenderId}`);
+       setLenders((prevLenders) =>
+      prevLenders.filter((lender) => lender._id !== lenderId)
+    ); // Remove from UI
+  } catch (error) {
+    console.error("Failed to delete lender:", error);
+  }
+};
+
   
   const handleRequest = async () => {
     try {
@@ -118,6 +135,7 @@ const LenderCard = ({ lender,borrower, onRequest, onDelete }) => {
         console.error('Failed to send response:', data.message);
         alert('Error sending request: ' + data.message);
       }
+      
     } catch (err) {
       console.error(err);
       alert('Error sending request');
@@ -126,8 +144,8 @@ const LenderCard = ({ lender,borrower, onRequest, onDelete }) => {
   return (
     <Card>
       {onDelete && (
-        <CloseButton onClick={() => onDelete(lender._id)} aria-label="Close">
-          ×
+        <CloseButton onClick={() =>  handleRemove(lender._id)} aria-label="Close">
+          X
         </CloseButton>
       )}
 
