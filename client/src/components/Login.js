@@ -44,7 +44,7 @@ const Login = () => {
 
         try {
           await axios.post(
-            'http://localhost:5000/api/updateLocation',
+            'https://my-server-api-eq9v.onrender.com/api/updateLocation',
             { latitude, longitude },
             {
               headers: {
