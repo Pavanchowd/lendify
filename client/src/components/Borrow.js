@@ -89,7 +89,7 @@ const Borrower = () => {
         const token = localStorage.getItem("token");
         console.log(token)
         // Fetch borrower data
-        const response = await axios.get("http://localhost:5000/api/borrower/profile", {
+        const response = await axios.get("https://my-server-api-eq9v.onrender.com/api/borrower/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,7 +138,7 @@ const Borrower = () => {
       const { latitude, longitude } = position.coords;
       setLocation({ latitude, longitude });
 
-      const res = await axios.get(`http://localhost:5000/api/borrower/offers`, {
+      const res = await axios.get(`https://my-server-api-eq9v.onrender.com/api/borrower/offers`, {
         headers: { Authorization: `Bearer ${token}` },
         params: { latitude, longitude, range }
       });
