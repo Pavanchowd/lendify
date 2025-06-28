@@ -194,7 +194,7 @@ const handleReject = async (requestId) => {
         // Send location to backend to update in DB
         try {
           const token = localStorage.getItem("token");
-          await fetch("http://localhost:5000/api/update-location", {
+          await fetch("https://my-server-api-eq9v.onrender.com/api/update-location", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -248,7 +248,7 @@ const handleReject = async (requestId) => {
   
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch("http://localhost:5000/api/lenders", {
+      const response = await fetch("https://my-server-api-eq9v.onrender.com/api/lenders", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
