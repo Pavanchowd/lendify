@@ -31,14 +31,14 @@ const Profile = () => {
     const fetchUserDetails = async () => {
       try {
         const token = localStorage.getItem('token');
-        const { data } = await axios.get('http://localhost:5000/api/auth/profile', {
+        const { data } = await axios.get('https://my-server-api-eq9v.onrender.com/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         setUserDetails({
           name: data.name || '',
           phoneNumber: data.phoneNumber || '',
-          profilePic: data.profilePic ? `http://localhost:5000/${data.profilePic}` : '',
+          profilePic: data.profilePic ? `https://my-server-api-eq9v.onrender.com/${data.profilePic}` : '',
           profilePicPreview: '',
         });
       } catch (error) {
@@ -76,7 +76,7 @@ const Profile = () => {
         formData.append('profilePic', userDetails.profilePic);
       }
 
-      const { data } = await axios.put('http://localhost:5000/api/auth/profile', formData, {
+      const { data } = await axios.put('https://my-server-api-eq9v.onrender.com/api/auth/profile', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -86,7 +86,7 @@ const Profile = () => {
       setUserDetails((prev) => ({
         ...prev,
         ...data,
-        profilePic: data.profilePic ? `http://localhost:5000/${data.profilePic}` : prev.profilePic,
+        profilePic: data.profilePic ? `https://my-server-api-eq9v.onrender.com/${data.profilePic}` : prev.profilePic,
         profilePicPreview: '',
       }));
 
