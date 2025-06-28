@@ -25,7 +25,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json());
 app.use(cors()); // If you're using React as frontend, enable CORS
 app.use(cors({
-  origin: 'http://localhost:3000',  // Allow requests from localhost:3000
+  origin: 'https://my-server-api-eq9v.onrender.com',  // Allow requests from localhost:3000
   methods: ['GET', 'POST'],        // Allow only GET and POST requests
   allowedHeaders: ['Content-Type'],
   credentials: true // Allow only Content-Type header
