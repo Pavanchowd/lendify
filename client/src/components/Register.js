@@ -33,7 +33,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const response = await axios.post('https://my-server-api-eq9v.onrender.com/api/auth/register', formData);
       setSuccess(true);
       // Navigate to login page or dashboard after successful registration
       setTimeout(() => {
